@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/registeredLocksFragment">
+
+    <fragment
+        android:id="@+id/addFragment"
+        android:name="com.yushin.lockapplication.fragments.AddFragment"
+        android:label="fragment_add">
+        <action
+            android:id="@+id/action_addFragment_to_registeredLocksFragment"
+            app:destination="@id/registeredLocksFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registeredLocksFragment"
+        android:name="com.yushin.lockapplication.fragments.RegisteredLocksFragment"
+        android:label="RegisteredLocksFragment">
+        <action
+            android:id="@+id/action_registeredLocksFragment_to_controlLockFragment"
+            app:destination="@id/controlLockFragment" />
+        <action
+            android:id="@+id/action_registeredLocksFragment_to_searchLocksFragment"
+            app:destination="@id/searchLocksFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/controlLockFragment"
+        android:name="com.yushin.lockapplication.fragments.ControlLockFragment"
+        android:label="fragment_control_lock"
+        tools:layout="@layout/fragment_control_lock" >
+        <action
+            android:id="@+id/action_controlLockFragment_to_lockSettingFragment"
+            app:destination="@id/lockSettingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchLocksFragment"
+        android:name="com.yushin.lockapplication.fragments.SearchLocksFragment"
+        android:label="fragment_search_locks">
+        <action
+            android:id="@+id/action_searchLocksFragment_to_addFragment"
+            app:destination="@id/addFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lockSettingFragment"
+        android:name="com.yushin.lockapplication.fragments.LockSettingFragment"
+        android:label="LockSettingFragment" >
+        <action
+            android:id="@+id/action_lockSettingFragment_to_controlLockFragment"
+            app:destination="@id/controlLockFragment" />
+    </fragment>
+</navigation>

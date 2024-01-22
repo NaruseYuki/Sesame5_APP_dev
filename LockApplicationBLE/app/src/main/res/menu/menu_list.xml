@@ -1,0 +1,19 @@
+<!-- res/menu/nav_menu.xml -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- メニューアイテム1 -->
+    <!--<item
+        android:id="@+id/nav_item1"
+        android:title="@string/lock_settings"/>
+-->
+    <!-- メニューアイテム2 -->
+    <item
+        android:id="@+id/nav_item2"
+        android:title="@string/registered_locks"/>
+
+    <!-- メニューアイテム3 -->
+    <item
+        android:id="@+id/nav_item3"
+        android:title="@string/search_locks"/>
+    <!-- 他のメニューアイテムを追加 -->
+</menu>

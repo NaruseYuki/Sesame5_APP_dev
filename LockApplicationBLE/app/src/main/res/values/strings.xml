@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">スマートロック施開錠アプリ</string>
+    <string name="lock_settings">デバイス設定一覧</string>
+    <string name="setting_select">デバイス設定選択</string>
+    <string name="registered_locks">登録デバイス一覧</string>
+    <string name="search_locks">デバイスを追加する</string>
+    <string name="add_setting">デバイス設定を追加する</string>
+    <string name="control_locks">デバイスを施錠・開錠する</string>
+    <string name="permission_title">パーミッションが必要です</string>
+    <string name="permission_message">この機能を使用するには、位置情報のパーミッションが必要です。設定画面から許可してください。</string>
+    <string name="permission_positive_button">設定を開く</string>
+    <string name="save">SAVE</string>
+    <string name="save_done">保存が完了しました</string>
+    <string name="connect">CONNECT</string>
+    <string name="unlock">開錠</string>
+    <string name="lock">施錠</string>
+    <string name="api_key">API Key</string>
+    <string name="lock_name">Lock Name</string>
+    <string name="lock_position">Lock Position</string>
+    <string name="unlock_position">Unlock Position</string>
+    <string name="navigation_drawer_open">ナビゲーションメニューを開く</string>
+    <string name="navigation_drawer_close">ナビゲーションメニューを閉じる</string>
+</resources>
