@@ -56,13 +56,8 @@ class SearchLocksFragment : Fragment() {
         val adapter = GenericListAdapter<CHDevices>(mDeviceList as MutableList<Any>, { chDevice ->
             when(chDevice){
                 is CHDevices ->{
-                    chDevice.connect{
-                    }
                     lockViewModel.setConnectedLock(chDevice)
-
-                    //ここでは選択したロックをセットするだけにしておく
-                    //登録はDBに設定情報を登録してから行う
-                    //Todo
+                    lockViewModel.connect()
                     chDevice.delegate =  object : CHDeviceStatusDelegate {
                        override fun onBleDeviceStatusChanged(
                            device: CHDevices,
@@ -71,7 +66,7 @@ class SearchLocksFragment : Fragment() {
                        ) {
                            super.onBleDeviceStatusChanged(device, status, shadowStatus)
                                if (status == CHDeviceStatus.ReadyToRegister) {
-                                   doRegisterDevice(chDevice) }
+                                   lockViewModel.doRegisterDevice(chDevice) }
                        }
                     }
                     Toast.makeText(requireContext(), "Clicked: ${chDevice.deviceId}", Toast.LENGTH_SHORT).show()
@@ -79,7 +74,7 @@ class SearchLocksFragment : Fragment() {
             }
             //ロックの名前を次のフラグメントに引き継ぐ
             findNavController().navigate(R.id.action_searchLocksFragment_to_addFragment)
-        }, null)
+        }, null,lockViewModel)
             binding.recyclerView.adapter = adapter
         return view
     }
@@ -105,29 +100,5 @@ class SearchLocksFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun doRegisterDevice(device: CHDevices){
-        device.register {
-            it.onSuccess {
-                //  登録成功
-                Log.d("doRegisterDevice","登録成功")
-                //初期値の角度を登録しておく
-                (device as? CHSesame2)?.let {
-                    device.configureLockPosition(0, 256) {}//1024 --> 360,256-->90
-                    device.setHistoryTag("Test1".toByteArray()) {}
-                    Log.d("doRegisterDevice","CHSesame2")
-                }
-                (device as? CHSesame5)?.let {
-                    device.configureLockPosition(0, 256) {}//1024 --> 360,256-->90
-                    device.setHistoryTag("Test2".toByteArray()) {}
-                    Log.d("doRegisterDevice","CHSesame5")
-                }
-            }
-            it.onFailure {
-                //  登録失敗
-                Log.d("doRegisterDevice","登録失敗")
-            }
-        }
     }
 }

@@ -18,6 +18,7 @@ import co.candyhouse.sesame.open.device.CHDevices
 import com.yushin.lockapplication.adapter.GenericListAdapter
 import com.yushin.lockapplication.adapter.SwipeToDeleteCallback
 import com.yushin.lockapplication.databinding.FragmentFirstBinding
+import com.yushin.lockapplication.databinding.FragmentFirstBinding.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,9 +49,9 @@ class RegisteredLocksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = inflate(inflater, container, false)
             // ツールバーのタイトルを設定
-            activity?.setTitle(R.string.registered_locks)
+            this.activity?.setTitle(R.string.registered_locks)
             val view = binding.root
             //鍵のリスト生成
             binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -62,12 +63,12 @@ class RegisteredLocksFragment : Fragment() {
                             when(chDevice){
                                 is CHDevices ->{
                                     lockViewModel.setConnectedLock(chDevice)
-                                    chDevice.connect {  }
+                                    lockViewModel.connect()
                                     Toast.makeText(requireContext(), "Clicked: ${chDevice.deviceId}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             findNavController().navigate(R.id.action_registeredLocksFragment_to_controlLockFragment)
-                        }, lockNameList)
+                        }, lockNameList,lockViewModel)
                         binding.recyclerView.adapter = adapter
                         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
                         itemTouchHelper.attachToRecyclerView(binding.recyclerView)

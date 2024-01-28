@@ -15,9 +15,11 @@
     <string name="unlock">開錠</string>
     <string name="lock">施錠</string>
     <string name="api_key">API Key</string>
-    <string name="lock_name">Lock Name</string>
-    <string name="lock_position">Lock Position</string>
-    <string name="unlock_position">Unlock Position</string>
+    <string name="lock_name">ロック名：</string>
+    <string name="lock_position">施錠角度：0〜360°で入力してください</string>
+    <string name="unlock_position">解錠角度：0〜360°で入力してください</string>
     <string name="navigation_drawer_open">ナビゲーションメニューを開く</string>
     <string name="navigation_drawer_close">ナビゲーションメニューを閉じる</string>
+    <string name="option_button">設定変更</string>
+    <string name="lock_state">ロックの状態：</string>
 </resources>

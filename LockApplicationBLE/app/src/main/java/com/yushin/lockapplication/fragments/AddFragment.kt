@@ -1,7 +1,6 @@
 package com.yushin.lockapplication.fragments
 
 import android.content.Context
-import com.yushin.lockapplication.model.LockModel
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spanned
@@ -31,7 +30,6 @@ class AddFragment  : Fragment() {
 
     private var _binding: FragmentConnectLockBinding? = null
     private val binding get() = _binding!!
-    private lateinit var lockModel:LockModel
     private lateinit var lockViewModel: LockViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +46,6 @@ class AddFragment  : Fragment() {
         activity?.setTitle(R.string.add_setting)
         binding.editTextLockPosition.filters = arrayOf(InputFilterMinMax(Constants.MIN_POSITION, Constants.MAX_POSITION))
         binding.editTextUnlockPosition.filters = arrayOf(InputFilterMinMax(Constants.MIN_POSITION, Constants.MAX_POSITION))
-        lockModel = LockModel.getInstance()
-        binding.buttonConnect.isVisible = false
         binding.scroll.setOnTouchListener { _, _ ->
             showOffKeyboard()
             false // タッチイベントを他のリスナーに渡すために false を返す
@@ -98,7 +94,6 @@ class AddFragment  : Fragment() {
     }
 
     private fun startConnection() {
-        binding.progressBar.visibility = View.VISIBLE
         //DB追加
         insertLock()
     }
@@ -144,8 +139,7 @@ class AddFragment  : Fragment() {
                 binding.editTextUnlockPosition.text.toString().toInt(),
                 lockViewModel.connectedLock.value?.deviceId!!
             )
-            lockModel.insertLock(lockEntity)
-            binding.progressBar.visibility = View.GONE
+            lockViewModel.insertLock(lockEntity)
             // データベース処理完了後にプログレスバーを非表示に
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), R.string.save_done, Toast.LENGTH_SHORT).show()

@@ -2,7 +2,6 @@ package com.yushin.lockapplication.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.yushin.lockapplication.model.LockModel
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spanned
@@ -31,7 +30,6 @@ class LockSettingFragment  : Fragment() {
 
     private var _binding: FragmentConnectLockBinding? = null
     private val binding get() = _binding!!
-    private lateinit var lockModel:LockModel
     private var lockName:String? = null
     private var lockPosition:Int? = null
     private var unLockPosition:Int? = null
@@ -45,42 +43,37 @@ class LockSettingFragment  : Fragment() {
 
         // ViewModelのインスタンスを取得
         lockViewModel = ViewModelProvider(requireActivity())[LockViewModel::class.java]
-
         // ロックエンティティを取得
         selectedSetting = lockViewModel.selectedLock
         lockEntity= selectedSetting.value
     }
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentConnectLockBinding.inflate(inflater, container, false)
         activity?.setTitle(R.string.lock_settings)
-        lockModel = LockModel.getInstance()
         // 数値範囲の制限を追加
-        binding.editTextLockPosition.filters = arrayOf(InputFilterMinMax("0", "1024"))
-        binding.editTextUnlockPosition.filters = arrayOf(InputFilterMinMax("0", "1024"))
+        binding.editTextLockPosition.filters = arrayOf(InputFilterMinMax("0", "360"))
+        binding.editTextUnlockPosition.filters = arrayOf(InputFilterMinMax("0", "360"))
         binding.scroll.setOnTouchListener { _, _ ->
             showOffKeyboard()
             false // タッチイベントを他のリスナーに渡すために false を返す
         }
         if(lockEntity !=null){
             lockName = lockEntity!!.name
-            lockPosition= lockEntity!!.lockPosition
-            unLockPosition= lockEntity!!.unlockPosition
+            lockPosition= lockEntity!!.lockPosition*45/128
+            unLockPosition= lockEntity!!.unlockPosition*45/128
 
         }
         if(registerDevFlg == true){
             activity?.setTitle(R.string.setting_select)
-            binding.buttonConnect.isVisible = true
             binding.buttonSave.isVisible = false
             binding.editTextLockName.isEnabled = false
             binding.editTextLockPosition.isEnabled = false
             binding.editTextUnlockPosition.isEnabled = false
         }else{
             activity?.setTitle(R.string.lock_settings)
-            binding.buttonConnect.isVisible = false
             binding.buttonSave.isVisible = true
         }
         return binding.root
@@ -110,10 +103,6 @@ class LockSettingFragment  : Fragment() {
             showOffKeyboard()
             updateSetting()
         }
-        binding.buttonConnect.setOnClickListener {
-            //現在接続中のデバイスに施錠開錠角度を設定する
-
-        }
     }
 
     private fun updateConnectButtonState() {
@@ -128,7 +117,6 @@ class LockSettingFragment  : Fragment() {
         buttonSave.isEnabled = isAllFieldsFilled
     }
     private fun updateSetting() {
-        binding.progressBar.visibility = View.VISIBLE
         updateLock()
     }
 
@@ -166,17 +154,16 @@ class LockSettingFragment  : Fragment() {
         val lockEntity = LockEntity(
             lockEntity!!.id,//変更しない
             binding.editTextLockName.text.toString(),
-            binding.editTextLockPosition.text.toString().toInt(),
-            binding.editTextUnlockPosition.text.toString().toInt(),
+            binding.editTextLockPosition.text.toString().toInt()*128/45,
+            binding.editTextUnlockPosition.text.toString().toInt()*128/45,
             lockEntity!!.uuid//UUIDは変更しない
         )
         val coroutineScope =CoroutineScope(Dispatchers.IO)
         coroutineScope.launch {
             // 非同期処理を実行
-            lockModel.updateLock(lockEntity)
+            lockViewModel.updateLock(lockEntity)
             // データベース処理完了後にメインスレッドでUI更新
             withContext(Dispatchers.Main) {
-                binding.progressBar.visibility = View.GONE
                 Toast.makeText(requireContext(), R.string.save_done, Toast.LENGTH_SHORT).show()
             }
         }

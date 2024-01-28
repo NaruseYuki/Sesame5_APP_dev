@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="Lock Name："
+        android:text="@string/lock_name"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,35 +22,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="Status："
+        android:text="@string/lock_state"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/item_lock"
         android:layout_marginTop="16dp"/>
+
     <Button
         android:id="@+id/buttonUnlock"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/connect_circle"
+        android:layout_width="174dp"
+        android:layout_height="166dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#9FA8DA"
         android:text="@string/unlock"
+        android:textColorHighlight="#FFEBEE"
+        android:textColorLink="#FFEBEE"
         android:textSize="30sp"
-        app:layout_constraintTop_toBottomOf="@id/item_status"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonLock"
-        android:layout_marginTop="100dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_status" />
 
     <Button
         android:id="@+id/buttonLock"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/connect_circle"
+        android:layout_width="174dp"
+        android:layout_height="166dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#5BFF5722"
         android:text="@string/lock"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/buttonUnlock"
-        app:layout_constraintTop_toBottomOf="@id/item_status"
-        android:layout_marginTop="100dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/item_status" />
+
+    <Button
+        android:id="@+id/buttonOption"
+        android:layout_width="237dp"
+        android:layout_height="82dp"
+        android:layout_marginBottom="160dp"
+        android:backgroundTint="#A09FA3"
+        android:text="@string/option_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:textSize="24sp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,16 +44,15 @@
         android:id="@+id/editTextUnlockPosition"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="32dp"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:autofillHints="@string/unlock_position"
         android:hint="@string/unlock_position"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/buttonConnect"
-        app:layout_constraintTop_toBottomOf="@+id/editTextLockPosition"
         android:inputType="number"
         android:max="1024"
         android:min="0"
-        android:autofillHints="@string/unlock_position" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextLockPosition" />
 
 
     <Button
@@ -68,37 +67,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextUnlockPosition" />
 
-    <Button
-        android:id="@+id/buttonConnect"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="150dp"
-        android:background="@drawable/connect_circle"
-        android:gravity="center"
-        android:text="@string/connect"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSave" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/buttonConnect"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="gone" />
-
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

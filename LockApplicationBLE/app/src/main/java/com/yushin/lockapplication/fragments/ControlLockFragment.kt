@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import co.candyhouse.sesame.open.device.CHDeviceStatus
+import co.candyhouse.sesame.open.device.CHDeviceStatus.*
 import co.candyhouse.sesame.open.device.CHDeviceStatusDelegate
 import co.candyhouse.sesame.open.device.CHDevices
 import co.candyhouse.sesame.open.device.CHSesame2
@@ -19,6 +20,7 @@ import com.yushin.lockapplication.R
 import com.yushin.lockapplication.databinding.FragmentConnectLockBinding
 import com.yushin.lockapplication.databinding.FragmentControlLockBinding
 import com.yushin.lockapplication.databinding.FragmentFirstBinding
+import com.yushin.lockapplication.entities.LockEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -26,26 +28,41 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import viewModel.LockViewModel
 import java.util.ArrayList
+import java.util.UUID
 
 class ControlLockFragment : Fragment() {
     private var _binding: FragmentControlLockBinding? = null
     private val binding get() = _binding!!
     private lateinit var lockViewModel: LockViewModel
     private var connectedLock : LiveData<CHDevices>? = null
-    private var selectedLock:CHDevices? = null
+    private var connectedLockValue:CHDevices? = null
+    private  var lockNameList:Map<UUID?,String>? = null
+    private var lockList : LiveData<Map<UUID?,String>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lockViewModel = ViewModelProvider(requireActivity())[LockViewModel::class.java]
         connectedLock = lockViewModel.connectedLock
         Log.d("connectedLock",connectedLock.toString())
-        selectedLock = connectedLock!!.value
-        connectedLock?.observe(this){ lock ->
-            selectedLock = lock
-            selectedLock?.connect {  }
+        lockList = lockViewModel.lockList
+        lockNameList = lockList!!.value
+        lockList?.observe(this){ it ->
+            lockNameList = it
+        }
+        connectedLockValue = connectedLock!!.value
+        connectedLock?.observe(this){
+            //connectedLockValue = lock
+            lockViewModel.connect()
+            run lockName@{
+                lockNameList?.forEach() {
+                    if (it.key == connectedLockValue?.deviceId){
+                        binding.itemLock.text = "ロック名："+ it.value
+                        return@lockName
+                    }
+                }
+            }
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,10 +70,16 @@ class ControlLockFragment : Fragment() {
         // Inflate the layout for this fragment
         activity?.setTitle(R.string.control_locks)
         _binding = FragmentControlLockBinding.inflate(inflater, container, false)
+        var statusText = "ロックの状態:"
+        statusText += when(connectedLockValue?.deviceStatus){
+            Locked -> "施錠"
+            Unlocked -> "解錠"
+            IotDisconnected -> "ロック切断"
+            else -> "通信中"
+        }
 
-        var statusText = "Status:${selectedLock?.deviceStatus}"
         binding.itemStatus.text = statusText
-        selectedLock?.delegate =  object : CHDeviceStatusDelegate {
+        connectedLockValue?.delegate =  object : CHDeviceStatusDelegate {
             override fun onBleDeviceStatusChanged(
                 device: CHDevices,
                 status: CHDeviceStatus,
@@ -64,9 +87,15 @@ class ControlLockFragment : Fragment() {
             ) {
                 super.onBleDeviceStatusChanged(device, status, shadowStatus)
                 Log.d("onBleDeviceStatusChanged",status.toString())
-                var statusText = "Status:$status"
+                var statusText = "ロックの状態:"
                 CoroutineScope(Main).launch {
                     if(_binding != null){
+                        statusText += when(status){
+                            Locked -> "施錠"
+                            Unlocked -> "解錠"
+                            IotDisconnected -> "ロック切断"
+                            else -> "通信中"
+                        }
                         binding.itemStatus.text = statusText
                     }
                 }
@@ -76,104 +105,33 @@ class ControlLockFragment : Fragment() {
         //開錠処理
         binding.buttonUnlock.setOnClickListener(){
             Log.d("controlLock","starting unlock")
-            selectedLock?.let { it1 -> controlLock(it1,1) }
+            connectedLockValue?.let { it1 -> controlLock(it1,1) }
 
         }
 
         //施錠処理
         binding.buttonLock.setOnClickListener(){
             Log.d("controlLock","starting lock")
-            selectedLock?.let { it2 -> controlLock(it2,2) }
+            connectedLockValue?.let { it2 -> controlLock(it2,2) }
         }
+        //設定変更
+        binding.buttonOption.setOnClickListener(){
+            //設定画面を呼び出す
+
+        }
+
 
         return binding.root
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        selectedLock?.disconnect {  }
+        //lockViewModel.disconnect()
         _binding = null
     }
 
     //1:unlock,2:lock
     private fun controlLock(device:CHDevices,value:Int){
-        when (device) {
-            is CHSesameBot -> {
-                var checkBLELock = true
-                CoroutineScope(IO).launch {
-                    for (index in 0 until 5) {
-                        if (checkBLELock) {
-                            device.click {
-                                it.onSuccess {
-                                    checkBLELock = false
-                                }
-                            }
-                            delay(2000)
-                        }
-                    }
-                }
-            }
-            is CHSesame2 -> {//sesameOS2 ==> model--> sesame4  sesame2(客服認知sesame3)
-                var checkBLELock = true// 記錄開鎖成功沒？
-                CoroutineScope(IO).launch {
-                    for (index in 0 until 5) {//每隔兩秒開一次開開
-                        if (checkBLELock) {
-                            when(value){
-                                 1 ->{
-                                     device.unlock {
-                                         it.onSuccess {
-                                             checkBLELock = false
-                                             Log.d("controlLock","complete unlock")
-                                         }
-                                         it.onFailure {}
-                                     }
-                                }
-                                2->{
-                                    device.lock {
-                                        it.onSuccess {
-                                            checkBLELock = false
-                                            Log.d("controlLock","complete lock")
-                                        }
-                                        it.onFailure {}
-                                    }
-                                }
-                            }
-
-                            delay(2000)
-                        }
-                    }
-                }
-            }
-            is CHSesame5 -> {
-                var checkBLELock = true// 記錄開鎖成功沒？
-                CoroutineScope(IO).launch {
-                    for (index in 0 until 5) {//每隔兩秒開一次開開
-                        if (checkBLELock) {
-                            when(value){
-                                1 ->{
-                                    device.unlock {
-                                        it.onSuccess {
-                                            checkBLELock = false
-                                        }
-                                        it.onFailure {}
-                                    }
-                                }
-                                2->{
-                                    device.lock {
-                                        it.onSuccess {
-                                            checkBLELock = false
-                                        }
-                                        it.onFailure {}
-                                    }
-                                }
-                            }
-
-                            delay(2000)
-                        }
-                    }
-                }
-            }
-        }//end when (device)
-
+        lockViewModel.controlLock(device,value)
     }
 }

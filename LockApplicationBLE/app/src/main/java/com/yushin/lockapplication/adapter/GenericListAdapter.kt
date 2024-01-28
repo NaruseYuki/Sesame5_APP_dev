@@ -3,25 +3,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import co.candyhouse.sesame.open.device.CHDevices
 import com.yushin.lockapplication.R
 import com.yushin.lockapplication.entities.LockEntity
-import com.yushin.lockapplication.model.LockModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import viewModel.LockViewModel
 import java.util.UUID
 
 
 class GenericListAdapter<T>(private val itemList: MutableList<Any>, private val onItemClick:(Any)->Unit, private val nameList: Map<UUID?, String>?
-) :
+,private val lockViewModel: LockViewModel) :
     RecyclerView.Adapter<GenericListAdapter<T>.ViewHolder>() {
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemText: TextView = itemView.findViewById(R.id.item_text)
-
         init {
+            // ViewModelのインスタンスを取得
             itemView.setOnClickListener {
                 val position = absoluteAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -62,11 +63,10 @@ class GenericListAdapter<T>(private val itemList: MutableList<Any>, private val 
         itemList.removeAt(position)
         when( currentItem){
             is LockEntity ->{
-                val lockModel = LockModel.getInstance()
                 val coroutineScope = CoroutineScope(Dispatchers.IO)
                 coroutineScope.launch {
                     // 非同期処理を実行
-                    lockModel.deleteLock(currentItem)
+                    lockViewModel.deleteLock(currentItem)
                 }
             }
             is CHDevices ->{
@@ -76,3 +76,4 @@ class GenericListAdapter<T>(private val itemList: MutableList<Any>, private val 
         notifyItemRemoved(position)
     }
 }
+
